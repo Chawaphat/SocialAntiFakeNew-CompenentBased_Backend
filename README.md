@@ -1,4 +1,5 @@
-<img width="1406" height="728" alt="image" src="https://github.com/user-attachments/assets/19ce3be2-f33c-4538-b99b-83676af61da8" /># Social Anti-Fake News System — Backend
+<img width="1406" height="728" alt="image" src="https://github.com/user-attachments/assets/19ce3be2-f33c-4538-b99b-83676af61da8" />
+# Social Anti-Fake News System — Backend
 
 ## 📌 Overview
 A full-stack platform that lets a community report, review, and vote on suspected fake news, with a moderated admin workflow for verifying and publishing reports. This repository is the **backend REST API**, built as a component-based software design project, containerized and deployed to a cloud VM.
@@ -16,12 +17,13 @@ A full-stack platform that lets a community report, review, and vote on suspecte
 | Layer | Technology |
 |---|---|
 | Framework | Java, Spring Boot (Web, Data JPA, Security) |
-| Database | MySQL , phpMyAdmin|
+| Database | MySQL |
 | Auth | JWT (`jjwt`), Spring Security filter chain |
 | Object mapping | MapStruct, Lombok |
 | File storage | AWS S3 SDK (pointed at Supabase Storage) |
 | Build & deploy | Maven, Docker, Docker Compose |
-| CI/CD | GitHub Actions, deployed to an Azure cloud VM |
+| Infrastructure | Microsoft Azure Virtual Machine |
+| CI/CD | GitHub Actions → Docker Hub → deployed via `docker compose up` on the Azure VM |
 | Testing | Spring Boot Test |
 
 ## 🏗️ Architecture (High Level)
@@ -41,7 +43,26 @@ Spring Boot Application
         ▼
    MySQL Database                Supabase Storage (S3) — image uploads
 ```
-The service follows a layered **Controller → Service → DAO → Repository** architecture with DTO/mapper boundaries (via MapStruct) so API contracts stay decoupled from JPA entities, and a Spring Security + JWT filter chain protecting authenticated and role-restricted routes. The backend is containerized with Docker and shipped to a cloud VM through an automated GitHub Actions CI/CD pipeline.
+The service follows a layered **Controller → Service → DAO → Repository** architecture with DTO/mapper boundaries (via MapStruct) so API contracts stay decoupled from JPA entities, and a Spring Security + JWT filter chain protecting authenticated and role-restricted routes.
+
+## ☁️ Deployment
+The application is deployed on a **Microsoft Azure Virtual Machine** using **Docker Compose**, running a 3-container stack:
+
+```
+Azure Virtual Machine
+  └── docker compose up
+        ├── spring_backend   → Spring Boot API (port 8080), built from the repo Dockerfile
+        │                       and published to Docker Hub via CI
+        ├── mysql_db         → MySQL 8 database (port 3307 → 3306), with a persistent volume
+        │                       for data durability across restarts
+        └── pma (phpMyAdmin) → web-based DB admin UI (port 9000), for inspecting/managing
+                                 the MySQL database directly
+  All three containers share a dedicated Docker bridge network (app-network),
+  so the backend reaches MySQL by its service name (db) rather than a public address.
+```
+- The Spring Boot image is built from a multi-stage-friendly `Dockerfile` (Java 21 base, exploded JAR layout for smaller layers) and run with the `prod` Spring profile.
+- Database connection, credentials, and Hibernate DDL mode are injected via environment variables in `docker-compose.yml`, keeping the same image portable across environments.
+- `phpMyAdmin` is included in the same compose stack purely as an operational/debugging tool for the team, not part of the application's runtime path.
 
 ## 🔗 Related Repository
 - Frontend: `SocialAntiFakeNews-Frontend` (Vue 3 + TypeScript)
