@@ -74,6 +74,8 @@ Azure Virtual Machine
 <img width="702" height="492" alt="image" src="https://github.com/user-attachments/assets/7b2ed0ac-a8ea-428b-8b67-fadb8dc86080" />
 <img width="1400" height="728" alt="image" src="https://github.com/user-attachments/assets/ce44d0a4-f51a-41f2-bf32-339740d1bbf3" />
 <img width="1410" height="736" alt="image" src="https://github.com/user-attachments/assets/d0c36251-b439-4089-b9e5-11352f2da17d" />
+<img width="1408" height="698" alt="image" src="https://github.com/user-attachments/assets/108db653-0236-4493-a2f6-7747988004fa" />
+
 
 
 
